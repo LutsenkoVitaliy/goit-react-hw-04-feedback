@@ -1,51 +1,43 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
+
 import Section from "./Section/Section";
 import Notification from './Notification/Notification';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import Statistics from './Statistics/Statistics';
 
-class App extends Component {
-  state = {
-  good: 0,
-  neutral: 0,
-  bad: 0
-  }
 
-  countTotalFeedback = () => {
-    return Object.values(this.state).reduce((accumulator, value) => accumulator + value, 0)
-  };
+export default function App() {
+  const [feedback, setFeedback] = useState({ good: 0, neutral: 0, bad: 0 })
 
-  countPositiveFeedbackPercentage = () => {
-    return Math.round((100 * this.state.good) / this.countTotalFeedback());
-  }
+  const countTotalFeedback = () => Object.values(feedback).reduce((accumulator, value) => accumulator + value, 0);
 
-  valueIncrementLeaveFeedback = (option) => {
-    this.setState((prevState) => ({ [option]: prevState[option] + 1 }));
-  }
+  const countPositiveFeedbackPercentage = () => Math.round((100 * feedback.good) / countTotalFeedback());
+  
+  const valueIncrementLeaveFeedback = (option) => setFeedback({ ...feedback, [option]: feedback[option] + 1 });
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    
-    return (
+  const { good, neutral, bad } = feedback;
+
+return (
   <>
   <Section title="Please leave feedback">
     <FeedbackOptions 
-    options={Object.keys(this.state)} 
-    onLeaveFeedback={this.valueIncrementLeaveFeedback}/>
+    options={Object.keys(feedback)} 
+    onLeaveFeedback={valueIncrementLeaveFeedback}/>
   </Section>
   <Section title="Statistics">
-   {this.countTotalFeedback() ?
+   {countTotalFeedback() ?
     (<Statistics
       good={good}
       neutral={neutral}
       bad={bad}
-      total={this.countTotalFeedback()}
-      positivePercentage={this.countPositiveFeedbackPercentage()} />)
+      total={countTotalFeedback()}
+      positivePercentage={countPositiveFeedbackPercentage()} />)
     :
     (<Notification message={"There is no feedback"} />)}    
   </Section>
   </>      
-    )}
+    )
 }
 
-export default App;
+
+
